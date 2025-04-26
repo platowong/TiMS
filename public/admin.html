@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TiMS Admin Dashboard</title>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <label>URL to Load: <input id="urlInput" /></label><br/>
+  <p>Click on client name to load.</p>
+
+  <h2>Connected Clients:</h2>
+  <ul id="clientList"></ul>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.emit('register', 'admin');
+
+    socket.on('clientListUpdate', (clientNames) => {
+      const list = document.getElementById('clientList');
+      list.innerHTML = '';
+      clientNames.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        li.style.cursor = 'pointer';
+        li.onclick = () => sendURL(name);
+        list.appendChild(li);
+      });
+    });
+
+    function sendURL(clientName) {
+      const url = document.getElementById('urlInput').value;
+      socket.emit('sendURL', { targetName: clientName, url });
+    }
+  </script>
+</body>
+</html>

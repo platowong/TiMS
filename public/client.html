@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TiMS Client Interface</title>
+</head>
+<body oncontextmenu="return false;" onkeydown="return disableKeys(event)">
+  <h1>Client Interface</h1>
+
+  <div id="iframeContainer" style="margin-top: 20px;">
+    <iframe id="displayFrame" src="" width="100%" height="600px" style="border: 1px solid black;"></iframe>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let iframe = null;
+
+    // Helper function to get URL parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    socket.on('connect', () => {
+      const clientName = getQueryParam('client');
+      if (clientName) {
+        socket.emit('register', 'client', clientName);
+      } else {
+        alert('Missing client name in URL! Example: ?client=Client1');
+      }
+    });
+
+    socket.on('updateURL', (url) => {
+      const iframe = document.getElementById('displayFrame');
+      iframe.src = url;
+    });
+  </script>
+</body>
+</html>

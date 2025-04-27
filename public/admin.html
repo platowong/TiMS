@@ -2,15 +2,51 @@
 <html>
 <head>
   <title>TiMS Admin Dashboard</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <h1>Admin Dashboard</h1>
 
   <label>URL to Load: <input id="urlInput" /></label><br/>
-  <p>Click on a client to send the URL.</p>
+  <p>Click on a row to send the URL to that client.</p>
 
   <h2>Connected Clients:</h2>
-  <ul id="clientList"></ul>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Current URL</th>
+      </tr>
+    </thead>
+    <tbody id="clientList">
+    </tbody>
+  </table>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -21,31 +57,36 @@
       const list = document.getElementById('clientList');
       list.innerHTML = '';
       clients.forEach(client => {
-        const li = document.createElement('li');
+        const row = document.createElement('tr');
 
+        const nameCell = document.createElement('td');
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.value = client.name;
-        nameInput.style.marginRight = '10px';
 
         nameInput.onchange = () => {
           socket.emit('updateClientName', { targetID: client.id, newName: nameInput.value });
-          console.log(nameInput.value)
+          console.log('Updated name to:', nameInput.value);
         };
 
         nameInput.onclick = (event) => {
           event.stopPropagation();
         };
 
-        li.appendChild(nameInput);
+        nameCell.appendChild(nameInput);
+        row.appendChild(nameCell);
 
-        const infoText = document.createElement('span');
-        infoText.textContent = ` (${client.id}) ${client.currentURL}`;
-        li.appendChild(infoText);
+        const idCell = document.createElement('td');
+        idCell.textContent = client.id;
+        row.appendChild(idCell);
 
-        li.style.cursor = 'pointer';
-        li.onclick = () => sendURL(client.id);
-        list.appendChild(li);
+        const urlCell = document.createElement('td');
+        urlCell.textContent = client.currentURL;
+        row.appendChild(urlCell);
+
+        row.onclick = () => sendURL(client.id);
+
+        list.appendChild(row);
       });
     });
 

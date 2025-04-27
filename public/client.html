@@ -8,11 +8,12 @@
       top: 0;
       left: 0;
       width: 100%;
+      height: 5%;
       background-color: #333;
       color: white;
-      padding: 10px;
+      padding: 0.625em;
       font-family: Arial, sans-serif;
-      font-size: 14px;
+      font-size: 0.875em;
       z-index: 1000000;
       display: flex;
       justify-content: space-between;
@@ -29,7 +30,7 @@
 
     #iframeContainer {
       position: fixed;
-      top: 36px;
+      top: 5%;
       bottom: 0;
       right: 0;
       left: 0;
@@ -66,6 +67,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
+    const iframe = document.getElementById('displayFrame');
     let clientID = '';
     let clientName = '';
 
@@ -92,7 +94,6 @@
     });
 
     socket.on('updateURL', (url) => {
-      const iframe = document.getElementById('displayFrame');
       iframe.src = url;
     });
 
@@ -101,8 +102,6 @@
       document.getElementById('clientNameDisplay').textContent = newName;
     });
 
-    // Listen for iframe load to update page title
-    const iframe = document.getElementById('displayFrame');
     iframe.addEventListener('load', () => {
       try {
         const title = iframe.contentDocument.title || iframe.contentWindow.document.title;

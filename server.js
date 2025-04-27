@@ -19,7 +19,6 @@ function updateAdminClientList() {
       currentURL: c.currentURL
     }));
 
-  // Notify all admins about the updated client list
   for (const [id, client] of Object.entries(clients)) {
     if (client.role === 'admin') {
       io.to(id).emit('clientListUpdate', clientList);
@@ -48,9 +47,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendURL', ({ targetID, url }) => {
-    for (const [id, client] of Object.entries(clients)) {
+    for (const [socketId, client] of Object.entries(clients)) {
       if (client.id === targetID && client.role === 'client') {
-        io.to(id).emit('updateURL', url);
+        io.to(socketId).emit('updateURL', url);
         client.currentURL = url;
       }
     }
@@ -58,9 +57,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('updateClientName', ({ targetID, newName }) => {
-    for (const [id, client] of Object.entries(clients)) {
+    for (const [socketId, client] of Object.entries(clients)) {
       if (client.id === targetID && client.role === 'client') {
-        clients[id].name = newName;
+        clients[socketId].name = newName;
+        io.to(socketId).emit('clientNameUpdate', newName);
         updateAdminClientList();
       }
     }

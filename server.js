@@ -8,13 +8,17 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-const clients = {}; // { socket.id: { role, name } }
+const clients = {}; // { socket.id: { role, id, name, currentURL } }
 
 function updateAdminClientList() {
   const clientList = Object.values(clients)
     .filter(c => c.role === 'client')
-    .map(c => c.name);
-  
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      currentURL: c.currentURL
+    }));
+
   // Notify all admins about the updated client list
   for (const [id, client] of Object.entries(clients)) {
     if (client.role === 'admin') {
@@ -26,19 +30,31 @@ function updateAdminClientList() {
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('register', (role, name) => {
-    clients[socket.id] = { role, name };
-    console.log(`${role} registered as ${name} (${socket.id})`);
+  socket.on('register', (role, id, name) => {
+    if (!role) {
+      console.log(`Rejected connection ${socket.id}: no role specified`);
+      return;
+    }
+
+    clients[socket.id] = {
+      role,
+      id: id || socket.id,
+      name: name || id || socket.id,
+      currentURL: ''
+    };
+    console.log(`${role} registered as id: ${id || socket.id}, name: ${name || id || socket.id}`);
 
     updateAdminClientList();
   });
 
-  socket.on('sendURL', ({ targetName, url }) => {
+  socket.on('sendURL', ({ targetID, url }) => {
     for (const [id, client] of Object.entries(clients)) {
-      if (client.name === targetName && client.role === 'client') {
+      if (client.id === targetID && client.role === 'client') {
         io.to(id).emit('updateURL', url);
+        client.currentURL = url;
       }
     }
+    updateAdminClientList();
   });
 
   socket.on('disconnect', () => {

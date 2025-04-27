@@ -7,7 +7,7 @@
   <h1>Admin Dashboard</h1>
 
   <label>URL to Load: <input id="urlInput" /></label><br/>
-  <p>Click on client name to load.</p>
+  <p>Click on a client to send the URL.</p>
 
   <h2>Connected Clients:</h2>
   <ul id="clientList"></ul>
@@ -15,23 +15,23 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-    socket.emit('register', 'admin');
+    socket.emit('register', 'admin', 'adminID', 'Admin');
 
-    socket.on('clientListUpdate', (clientNames) => {
+    socket.on('clientListUpdate', (clients) => {
       const list = document.getElementById('clientList');
       list.innerHTML = '';
-      clientNames.forEach(name => {
+      clients.forEach(client => {
         const li = document.createElement('li');
-        li.textContent = name;
+        li.textContent = `${client.id} ${client.name} ${client.currentURL}`;
         li.style.cursor = 'pointer';
-        li.onclick = () => sendURL(name);
+        li.onclick = () => sendURL(client.id);
         list.appendChild(li);
       });
     });
 
-    function sendURL(clientName) {
+    function sendURL(clientID) {
       const url = document.getElementById('urlInput').value;
-      socket.emit('sendURL', { targetName: clientName, url });
+      socket.emit('sendURL', { targetID: clientID, url });
     }
   </script>
 </body>

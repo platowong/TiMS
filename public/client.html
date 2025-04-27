@@ -29,7 +29,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-    let iframe = null;
 
     function getQueryParam(param) {
       const urlParams = new URLSearchParams(window.location.search);
@@ -37,11 +36,12 @@
     }
 
     socket.on('connect', () => {
-      const clientName = getQueryParam('client');
-      if (clientName) {
-        socket.emit('register', 'client', clientName);
+      const clientID = getQueryParam('id');
+      const clientName = getQueryParam('name');
+      if (clientID) {
+        socket.emit('register', 'client', clientID, clientName || clientID);
       } else {
-        alert('Missing client name in URL! Example: ?client=Client1');
+        alert('Missing client ID in URL! Example: ?id=client1');
       }
     });
 

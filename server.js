@@ -57,6 +57,15 @@ io.on('connection', (socket) => {
     updateAdminClientList();
   });
 
+  socket.on('updateClientName', ({ targetID, newName }) => {
+    for (const [id, client] of Object.entries(clients)) {
+      if (client.id === targetID && client.role === 'client') {
+        clients[id].name = newName;
+        updateAdminClientList();
+      }
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
     delete clients[socket.id];

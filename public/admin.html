@@ -22,7 +22,27 @@
       list.innerHTML = '';
       clients.forEach(client => {
         const li = document.createElement('li');
-        li.textContent = `${client.id} ${client.name} ${client.currentURL}`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = client.name;
+        nameInput.style.marginRight = '10px';
+
+        nameInput.onchange = () => {
+          socket.emit('updateClientName', { targetID: client.id, newName: nameInput.value });
+          console.log(nameInput.value)
+        };
+
+        nameInput.onclick = (event) => {
+          event.stopPropagation();
+        };
+
+        li.appendChild(nameInput);
+
+        const infoText = document.createElement('span');
+        infoText.textContent = ` (${client.id}) ${client.currentURL}`;
+        li.appendChild(infoText);
+
         li.style.cursor = 'pointer';
         li.onclick = () => sendURL(client.id);
         list.appendChild(li);

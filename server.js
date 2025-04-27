@@ -7,9 +7,6 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static('public'));
-app.get('/', (req, res) => {
-  res.redirect('/client.html');
-});
 
 const clients = {}; // { socket.id: { role, id, name, currentURL } }
 

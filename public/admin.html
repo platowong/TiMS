@@ -69,7 +69,6 @@
 
         nameInput.onchange = () => {
           socket.emit('updateClientName', { targetID: client.id, newName: nameInput.value });
-          console.log('Updated name to:', nameInput.value);
         };
 
         nameInput.onclick = (event) => {

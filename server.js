@@ -66,6 +66,13 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('updateCurrentURL', (currentURL) => {
+    if (clients[socket.id] && clients[socket.id].role === 'client') {
+      clients[socket.id].currentURL = currentURL;
+      updateAdminClientList();
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
     delete clients[socket.id];

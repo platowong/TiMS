@@ -12,7 +12,7 @@
       background-color: #333;
       color: white;
       padding: 0.625em;
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       font-size: 0.875em;
       z-index: 1000000;
       display: flex;
@@ -22,10 +22,24 @@
       box-sizing: border-box;
     }
 
-    #statusLeft {
+    #statusLeft, #statusCenter, #statusRight {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    #statusLeft {
       gap: 10px;
+    }
+
+    #statusCenter {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    #statusRight {
+      margin-left: auto;
     }
 
     #iframeContainer {
@@ -52,16 +66,19 @@
     <div id="statusLeft">
       <div><strong>ID:</strong> <span id="clientIdDisplay">-</span></div>
       <div><strong>Name:</strong> <span id="clientNameDisplay">-</span></div>
-      <div><strong>Page Title:</strong> <span id="pageTitleDisplay">-</span></div>
     </div>
-    <div id="connectionStatus" style="font-weight: bold; color: lightgreen;">Connected</div>
+
+    <div id="statusCenter">
+      <div><strong><span id="pageTitleDisplay"></span></strong></div>
+    </div>
+
+    <div id="statusRight">
+      <div id="connectionStatus" style="font-weight: bold; color: red;">Disconnected</div>
+    </div>
   </div>
 
   <div id="iframeContainer">
-    <iframe id="displayFrame"
-        src=""
-        frameBorder="0">
-    </iframe>
+    <iframe id="displayFrame" src="" frameBorder="0"></iframe>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
